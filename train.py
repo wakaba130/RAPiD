@@ -30,6 +30,15 @@ def parse_args():
     parser.add_argument('--print_interval', type=int, default=1)
     parser.add_argument('--checkpoint_interval', type=int, default=2000)
     
+    parser.add_argument('--train_img_dir', type=str,
+                         default='../Datasets/COCO/train2017')
+    parser.add_argument('--train_json', type=str,
+                         default='../Datasets/COCO/annotations/instances_train2017.json')
+    parser.add_argument('--val_img_dir', type=str,
+                         default='./images/tiny_val/one')
+    parser.add_argument('--val_json', type=str,
+                         default='./images/tiny_val/one.json')
+
     parser.add_argument('--debug', action='store_true') # default=True)
     return parser.parse_args()
 
@@ -54,11 +63,11 @@ if __name__ == '__main__':
     # dataset setting
     print('initialing dataloader...')
     if args.dataset == 'COCO':
-        train_img_dir = '../Datasets/COCO/train2017'
+        train_img_dir = args.train_img_dir
         assert 'COCO' in train_img_dir # issue #11
-        train_json = '../Datasets/COCO/annotations/instances_train2017.json'
-        val_img_dir = './images/tiny_val/one'
-        val_json = './images/tiny_val/one.json'
+        train_json = args.train_json
+        val_img_dir = args.val_img_dir
+        val_json = args.val_json
         lr_SGD = 0.001 / batch_size / subdivision
         # Learning rate setup
         def burnin_schedule(i):
@@ -173,6 +182,7 @@ if __name__ == '__main__':
     dataiterator = iter(dataloader)
     
     if args.model == 'rapid_pL1':
+        print("koko")
         from models.rapid import RAPiD
         model = RAPiD(backbone=args.backbone, img_norm=False,
                        loss_angle='period_L1')
@@ -297,12 +307,13 @@ if __name__ == '__main__':
         # save detection
         if iter_i > 0 and iter_i % args.img_interval == 0:
             for img_path in eval_img_paths:
-                eval_img = Image.open(img_path)
-                dts = api.detect_once(model, eval_img, conf_thres=0.1, input_size=target_size)
-                np_img = np.array(eval_img)
-                visualization.draw_dt_on_np(np_img, dts)
-                np_img = cv2.resize(np_img, (416,416))
-                # cv2.imwrite(f'./results/eval_imgs/{job_name}_{today}_{iter_i}.jpg', np_img)
-                logger.add_image(img_path, np_img, iter_i, dataformats='HWC')
+                if '.jpg' in img_path:           
+                    eval_img = Image.open(img_path)
+                    dts = api.detect_once(model, eval_img, conf_thres=0.1, input_size=target_size)
+                    np_img = np.array(eval_img)
+                    visualization.draw_dt_on_np(np_img, dts)
+                    np_img = cv2.resize(np_img, (416,416))
+                    # cv2.imwrite(f'./results/eval_imgs/{job_name}_{today}_{iter_i}.jpg', np_img)
+                    logger.add_image(img_path, np_img, iter_i, dataformats='HWC')
 
             model.train()
