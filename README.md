@@ -66,7 +66,7 @@ if args.dataset == 'COCO':
     train_json = 'path/to/COCO/annotations/instances_train2017.json'
 ```
 
-4. `python3 train.py --model rapid_pL1 --dataset COCO --batch_size 2 --train_img_dir [path_to]/COCO --train_json [path_to]/COCO/annotations/instances_train2017.json` should work. Try to set the largest possible batch size that can fit in the GPU memory.
+4. `python3 train.py --model rapid_pL1 --dataset COCO --batch_size 2 --train_img_dir [path_to]/COCO/images/train2017 --train_json [path_to]/COCO/annotations/instances_train2017.json` should work. Try to set the largest possible batch size that can fit in the GPU memory.
 
 TBD: we will release the weights that are pre-trained on COCO.
 

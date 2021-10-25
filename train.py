@@ -12,6 +12,7 @@ import cv2
 from datasets import Dataset4YoloAngle
 from utils import MWtools, timer, visualization
 import api
+import json
 
 
 def parse_args():
@@ -182,7 +183,6 @@ if __name__ == '__main__':
     dataiterator = iter(dataloader)
     
     if args.model == 'rapid_pL1':
-        print("koko")
         from models.rapid import RAPiD
         model = RAPiD(backbone=args.backbone, img_norm=False,
                        loss_angle='period_L1')
@@ -198,6 +198,11 @@ if __name__ == '__main__':
         print("loading ckpt...", args.checkpoint)
         weights_path = os.path.join('./weights/', args.checkpoint)
         state = torch.load(weights_path)
+
+        #for s in state:
+        #    print(s)
+        print(state["optimizer"])
+
         model.load_state_dict(state['model'])
         start_iter = state['iter']
 
@@ -227,7 +232,8 @@ if __name__ == '__main__':
     if args.dataset not in args.checkpoint:
         start_iter = -1
     else:
-        optimizer.load_state_dict(state['optimizer_state_dict'])
+        #optimizer.load_state_dict(state['optimizer_state_dict'])
+        optimizer.load_state_dict(state['optimizer'])
         print(f'begin from iteration: {start_iter}')
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, burnin_schedule, last_epoch=start_iter)
 
