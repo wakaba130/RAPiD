@@ -12,12 +12,12 @@ from api import Detector
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--img_path', type=str,
-                        default='/media/wakaba/41572840-475d-437a-8ebf-be3ac4a42f86/R0010031')
-    parser.add_argument('--exe', type=str, default='png')
+                        default='./images')
+    parser.add_argument('--exe', type=str, default='jpg')
     parser.add_argument('--weight', type=str,
                         default='./weights/pL1_MWHB1024_Mar11_4000.ckpt')
     parser.add_argument('--output', type=str,
-                        default='./output_R0010031')
+                        default='./output')
     return parser.parse_args()
 
 
